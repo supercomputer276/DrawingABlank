@@ -1,4 +1,4 @@
-# DrawingABlank
+# Drawing a Blank
 
 The player takes on the role of the VOID IMP, a living sentient rabbit-shaped hole in the fabric of space. Its task, given to it by its Patron, is to seek out the Heart of the Matter. This is accomplished by exploring a vast monochrome world, gathering power, and defeating agents of Matter.
 

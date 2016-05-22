@@ -16,6 +16,8 @@
     </sprites>
     <sprites name="player">
       <sprite>sprites\spr_player</sprite>
+      <sprite>sprites\spr_brush</sprite>
+      <sprite>sprites\spr_blot</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background"/>
