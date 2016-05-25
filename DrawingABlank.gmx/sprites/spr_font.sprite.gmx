@@ -147,5 +147,10 @@
     <frame index="124">images\spr_font_124.png</frame>
     <frame index="125">images\spr_font_125.png</frame>
     <frame index="126">images\spr_font_126.png</frame>
+    <frame index="127">images\spr_font_127.png</frame>
+    <frame index="128">images\spr_font_128.png</frame>
+    <frame index="129">images\spr_font_129.png</frame>
+    <frame index="130">images\spr_font_130.png</frame>
+    <frame index="131">images\spr_font_131.png</frame>
   </frames>
 </sprite>

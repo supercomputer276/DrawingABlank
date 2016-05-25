@@ -18,15 +18,39 @@
       <sprite>sprites\spr_player</sprite>
       <sprite>sprites\spr_brush</sprite>
       <sprite>sprites\spr_blot</sprite>
+      <sprite>sprites\spr_blottarget</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
+  <scripts name="scripts">
+    <scripts name="draw_sprite_string">
+      <script>scripts\draw_sprite_string_general.gml</script>
+      <script>scripts\draw_sprite_string.gml</script>
+      <script>scripts\draw_sprite_string_color.gml</script>
+      <script>scripts\draw_sprite_string_ext.gml</script>
+      <script>scripts\draw_sprite_string_ext_color.gml</script>
+      <script>scripts\draw_sprite_string_transformed.gml</script>
+      <script>scripts\getHexValue.gml</script>
+      <script>scripts\getSpecialCharacter.gml</script>
+    </scripts>
+    <script>scripts\initialize.gml</script>
+  </scripts>
   <objects name="objects">
     <objects name="environment">
       <object>objects\obj_wall</object>
     </objects>
+    <objects name="control">
+      <object>objects\obj_textbox</object>
+      <object>objects\obj_init</object>
+    </objects>
+    <objects name="player">
+      <object>objects\obj_player</object>
+    </objects>
   </objects>
+  <rooms name="rooms">
+    <room>rooms\rm_test</room>
+  </rooms>
   <help>
     <rtf>help.rtf</rtf>
   </help>
