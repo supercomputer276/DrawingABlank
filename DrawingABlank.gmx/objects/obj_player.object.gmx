@@ -4,10 +4,311 @@
   <solid>0</solid>
   <visible>-1</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>spr_player</maskName>
-  <events/>
+  <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///create brush
+instance_create(x,y,obj_brush);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Movement variable setup
+horMovement = 0;
+//every step, the player moves this many pixels horizontally (negative moves left)
+signCheck = 0;
+//used for movement checking
+jumpsMade = 0;
+//jumps made; limited by NUMJUMPS. Resets on landing.
+facing = "right";
+//set to either "left" or "right" to indicate which way the player faces
+mercyInvincibility = 0;
+//hit protection
+mercySetting = 120;
+//how much to set the time to on hit
+recoilFlag = false;
+//if the player is flying from taking a hit; set to false when they land
+
+deadFlag = false;
+//whether or not the player is dead and shouldn't do anything
+
+//constants (or close to such)
+MOVEMAX = 1; //max movement speed
+MOVEINC = 0.25; //increment speed
+NUMJUMPS = 1; //number of available total jumps
+STRJUMP1 = -3.75; //strength of first jump
+INCJUMP = 0.36; //subtracted from jumps while the button is held down
+CUTJUMP = -2; //vspeed must be less than this to add extra height
+STRJUMP2 = -6; //strength of additional jumps
+RECOILMAX = 5; //recoil maximum speed
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///gravity
+gravity_direction = 270; //down
+if(place_free(x,y+1)) {
+    gravity = worldGravity;
+    //show_debug_message(string(vspeed));
+}
+else {
+    gravity = 0;
+}
+
+//cap falling speed
+if(vspeed &gt; 11) vspeed = 11;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///input
+if(input_check_pressed(input.passive_primary)) {
+    //open pause menu
+    //handled by obj_hud
+}
+if(input_check(input.move_left)) {
+    //move left
+    if(!recoilFlag) {
+        horMovement -= MOVEINC;
+        facing = "left";
+    }
+}
+if(input_check(input.move_right)) {
+    //move right
+    if(!recoilFlag) {
+        horMovement += MOVEINC;
+        facing = "right";
+    }
+}
+if(input_check_pressed(input.move_up)) {
+    //
+}
+if(input_check_pressed(input.action_primary)) {
+    //jump
+    if(jumpsMade == 0) { //first jump
+        if(!place_free(x,y+1)) {
+            vspeed = STRJUMP1; //-8.6
+            jumpsMade += 1;
+            //show_debug_message(string(vspeed));
+        }
+    }
+    else { //extra jumps
+        if(jumpsMade &lt; NUMJUMPS) {
+            vspeed = STRJUMP2;
+            jumpsMade += 1;
+        }
+    }
+}
+if(input_check(input.action_primary)) {
+    //variable jump
+    if(vspeed &lt; CUTJUMP)
+        vspeed -= INCJUMP;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///movement
+
+//slow movement
+if(horMovement != 0 &amp;&amp; !recoilFlag) {
+    if(!input_check(input.move_left) &amp;&amp; !input_check(input.move_right)) {
+        //slow down
+        if(abs(horMovement) &lt;= MOVEINC) {
+            horMovement = 0;
+        }
+        else if(horMovement &lt; 0) { //moving left
+            horMovement += MOVEINC;
+        }
+        else { //moving right
+            horMovement -= MOVEINC;
+        }
+    }
+}
+
+//limit horizontal movement
+if(recoilFlag)
+    horMovement = min(RECOILMAX, max(horMovement, -RECOILMAX));
+else
+    horMovement = min(MOVEMAX, max(horMovement, -MOVEMAX));
+
+//move the character
+var increment = 1;
+signCheck = sign(horMovement) * increment;
+repeat(abs(horMovement)) {
+//for(var i = increment; i &lt; abs(horMovement); i += increment) {
+    if(place_free(x + signCheck,y)) {
+        x += signCheck;
+        if(!place_free(x,y+2) &amp;&amp; place_free(x,y+1))
+            y += 1;
+    }
+    else {
+        if(place_free(x + signCheck,y - 1)) { //slope
+            y -= 1;
+            x += signCheck;
+        }
+        else { //solid obstruction
+            horMovement = 0;
+            break;
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="obj_wall">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///moving to contact in the proper direction
+if(other.y &gt; y &amp;&amp; !place_free(x,y+vspeed)) {
+    //land on top of
+    move_contact_solid(270,11);
+    vspeed = 0;
+    gravity = 0;
+    jumpsMade = 0;
+    y = round(y);
+}
+if(other.y &lt; y &amp;&amp; !place_free(x,y+vspeed)) {
+    //hit from below
+    move_contact_solid(90,11);
+    vspeed = 0;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///fade out with less Void
+var alphaBottom = 0.25, //alpha at 0 Void
+    alpha;
+if(maxBlots &gt; 0) alpha = alphaBottom + ((1 - alphaBottom) / maxBlots) * currentBlots;
+else alpha = 1;
+draw_set_alpha(alpha);
+draw_self();
+draw_set_alpha(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+  </events>
   <PhysicsObject>0</PhysicsObject>
   <PhysicsObjectSensor>0</PhysicsObjectSensor>
   <PhysicsObjectShape>0</PhysicsObjectShape>

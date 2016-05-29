@@ -132,18 +132,20 @@ var frameWidth = width * pieceWidth,
 var frameX = effectiveX - (frameWidth / 2),
     frameY = effectiveY - (frameHeight / 2);
 //draw frame
-draw_sprite_stretched(frame,4,frameX,frameY,frameWidth,frameHeight);
-draw_sprite(frame,0,frameX-pieceWidth,frameY-pieceHeight);
-draw_sprite(frame,2,frameX+frameWidth,frameY-pieceHeight);
-draw_sprite(frame,6,frameX-pieceWidth,frameY+frameHeight);
-draw_sprite(frame,8,frameX+frameWidth,frameY+frameHeight);
-for(var i = 0; i &lt; width; i++) {
-    draw_sprite(frame,1,frameX+i*pieceWidth,frameY-pieceHeight);
-    draw_sprite(frame,7,frameX+i*pieceWidth,frameY+frameHeight);
-}
-for(var i = 0; i &lt; height; i++) {
-    draw_sprite(frame,3,frameX-pieceWidth,frameY+i*pieceHeight);
-    draw_sprite(frame,5,frameX+frameWidth,frameY+i*pieceHeight);
+if(frame != noone) {
+    draw_sprite_stretched(frame,4,frameX,frameY,frameWidth,frameHeight);
+    draw_sprite(frame,0,frameX-pieceWidth,frameY-pieceHeight);
+    draw_sprite(frame,2,frameX+frameWidth,frameY-pieceHeight);
+    draw_sprite(frame,6,frameX-pieceWidth,frameY+frameHeight);
+    draw_sprite(frame,8,frameX+frameWidth,frameY+frameHeight);
+    for(var i = 0; i &lt; width; i++) {
+        draw_sprite(frame,1,frameX+i*pieceWidth,frameY-pieceHeight);
+        draw_sprite(frame,7,frameX+i*pieceWidth,frameY+frameHeight);
+    }
+    for(var i = 0; i &lt; height; i++) {
+        draw_sprite(frame,3,frameX-pieceWidth,frameY+i*pieceHeight);
+        draw_sprite(frame,5,frameX+frameWidth,frameY+i*pieceHeight);
+    }
 }
 //draw text if the dimensions fit
 if(height == targetHeight &amp;&amp; width == targetWidth) {

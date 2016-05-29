@@ -31,7 +31,8 @@ var spritestringSprite = argument0,
     currentAlpha = argument9;
 var spriteWidth = sprite_get_width(spritestringSprite),
     spriteHeight = sprite_get_height(spritestringSprite),
-    baseColor = currentColor;
+    baseColor = currentColor,
+    baseAlpha = currentAlpha;
 var lineNum = 0, cursorPos = 0; //keep track of current writing position
 for(var j = 1; j <= string_length(spritestringText); j+= 1)
 {
@@ -72,7 +73,7 @@ for(var j = 1; j <= string_length(spritestringText); j+= 1)
     if(charToDraw != "") {
         var ascii = ord(char);
         draw_sprite_ext(spritestringSprite,ascii,
-            spritestringX+((cursorPos-1)*(spriteWidth*spritestringXscale)),
+            spritestringX+(cursorPos*(spriteWidth*spritestringXscale)),
             spritestringY+(((spriteHeight+spritestringSep)*spritestringYscale)*lineNum),
             spritestringXscale,spritestringYscale,
             0,currentColor,currentAlpha);
