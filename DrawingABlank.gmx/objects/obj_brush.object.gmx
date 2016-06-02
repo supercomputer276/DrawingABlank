@@ -32,6 +32,11 @@ guiY = display_get_gui_height() / 2;
 
 canDraw = true;
 //whether or not Void can be used right now
+deadBrush = false;
+//flag for if the brush meter hit 0; prevents drawing until refill
+
+drawing = ds_list_create();
+//list of obj_drawmark objects made when drawing
 </string>
           </argument>
         </arguments>
@@ -63,14 +68,297 @@ if(input_get(input.brush_mouse)) {
     guiY = y - view_yview[0];
 }
 else {
+    //adjust guiX and guiY based on input.brush_moveh
+    // and input.brush_movev analog input
+    
+    //keep in boundaries
+    if(guiX &lt; 0) guiX = 0;
+    if(guiX &gt; _gui_width) guiX = _gui_width;
+    if(guiY &lt; 0) guiY = 0;
+    if(guiY &gt; _gui_height) guiY = _gui_height;
+    //adjust object position
+    x = guiX + view_xview[0];
+    y = guiY + view_yview[0];
 }
 
 </string>
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///determine canDraw state
+canDraw = !deadBrush;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///recharge brush and refill Void
+if(!(input_check(input.brush_draw) || input_check(input.brush_flickpress)
+    || input_check(input.brush_flickh) || input_check(input.brush_flickv))) {
+    //don't refill while spending Void
+    if(currentBrush &lt; maxBrush) {
+        brushRechargeTimer++;
+        if(brushRechargeTimer &gt;= brushRechargeValue) {
+            currentBrush++;
+            brushRechargeTimer = 0;
+            if(currentBrush &gt;= maxBrush)
+                deadBrush = false;
+        }
+    }
+    
+    if(currentBlots &lt; maxBlots &amp;&amp; refillBlots &gt; 0) {
+        blotRefillTimer++;
+        if(blotRefillTimer &gt;= blotRefillValue) {
+            currentBlots++;
+            refillBlots--;
+            blotRefillTimer = 0;
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///perform gesture operations
+TMCT_OnStep();
+TMCT_SetDeviceGesture(0,TMCT_SegmentToGestureName( TMCT_GetSegment(0)));
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///input: drawing void
+if(canDraw &amp;&amp; input_check(input.brush_draw) &amp;&amp; currentBrush &gt; 0 &amp;&amp; !deadBrush) {
+    ds_list_add(drawing,instance_create(x,y,obj_drawmark));
+    brushSpendTimer++;
+    if(brushSpendTimer &gt;= brushSpendValue) {
+        currentBrush--;
+        brushSpendTimer = 0;
+        if(currentBrush &lt;= 0)
+            event_user(0);
+    }
+}
+if(input_check_released(input.brush_draw) &amp;&amp; canDraw) {
+    event_user(0);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///input: flicking void
+if(input_get(input.brush_flickmouse)) {
+    //flick to the cursor's position
+    if(input_check(input.brush_flickpress) &amp;&amp; canDraw) {
+        if(currentBlots &gt; 0 &amp;&amp; currentBrush &gt; 0) {
+            if(blotFlickTimer == 0) {
+                currentBlots--;
+                var shot = instance_create(obj_player.x,obj_player.y,obj_voidblot);
+                shot.direction = point_direction(shot.x,shot.y,x,y);
+            }
+            brushSpendTimer++;
+            if(brushSpendTimer &gt;= brushSpendValue) {
+                currentBrush--;
+                brushSpendTimer = 0;
+                if(currentBrush &lt;= 0) {
+                    deadBrush = true;
+                }
+            }
+        }
+        blotFlickTimer++;
+        if(blotFlickTimer &gt;= blotFlickValue) blotFlickTimer = 0;
+    }
+    else blotFlickTimer = 0;
+}
+else {
+    //flick based on axis input
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///FINISH A DRAWING
+//reset timers and disable drawing if brush meter ran out
+brushSpendTimer = 0;
+if(currentBrush &lt;= 0)
+    deadBrush = true;
+//check for gestures
+var last_valid_shape = TMCT_GetCurrentGesture(0);
+//if(last_valid_shape == "CIRCLE") {
+//if(drawing_test_circle()) {
+if(last_valid_shape == "CIRCLE" &amp;&amp; drawing_test_circle()) {
+    //recall void from voided objects
+    show_debug_message("CIRCLE drawn");
+    var recaller = instance_create(recallCircleX,recallCircleY,obj_recallcircle);
+    recaller.r = recallCircleRadius;
+}
+//if none were found, check for all targetable objects underneath and void them
+else {
+    var targetList = ds_list_create();
+    //assemble list of drawn-over targets
+    //show_debug_message("-- CHECKING DRAWING FOR VOIDABLE --");
+    for(var i = 0; i &lt; instance_number(obj_drawmark); i++) {
+        var thisPoint = instance_find(obj_drawmark,i);
+        var targetPoint = instance_position(thisPoint.x,thisPoint.y,all);
+        //show_debug_message("Point " + string(i) + ": targetPoint = " + string(targetPoint));
+        if(checkTargetable(targetPoint,0)) {
+            //voidable
+            if(ds_list_find_index(targetList,targetPoint) == -1) {
+                //add new target to list
+                ds_list_add(targetList,targetPoint);
+            }
+        }
+    }
+    //for each instance in targetList, create targeting object 
+    for(var i = 0; i &lt; ds_list_size(targetList); i++) {
+        var thisTarget = ds_list_find_value(targetList,i);
+        var targeting = instance_create(
+            thisTarget.x+(thisTarget.sprite_width/2),
+            thisTarget.y+(thisTarget.sprite_height/2),
+            obj_drawtarget);
+        targeting.delayTimer = (i * 10);
+        targeting.myTarget = thisTarget;
+    }
+    ds_list_destroy(targetList);
+}
+//clear drawing
+with(obj_drawmark) instance_destroy();
+ds_list_clear(drawing);
+TMCT_ClearSegment(0);
+TMCT_ClearDeviceData(0);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///draw the sketch being painted currently
+for(var i = 0; i &lt; ds_list_size(drawing); i++) {
+    var point = ds_list_find_value(drawing,i);
+    draw_sprite(point.sprite_index,point.image_index,
+        point.x-view_xview[0], point.y-view_yview[0]);
+    if(i &gt; 0) {
+        var backpoint = ds_list_find_value(drawing,i-1);
+        draw_line_width_colour(backpoint.x-view_xview[0], backpoint.y-view_yview[0],
+            point.x-view_xview[0], point.y-view_yview[0],
+            5,c_black,c_black)
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -90,12 +378,27 @@ else {
             <string>///draw cursor
 var alpha = 1;
 if(!canDraw) alpha = 0.5;
-draw_set_alpha(alpha);
-draw_self();
-draw_set_alpha(1);
+draw_sprite_ext(sprite_index,image_index,guiX,guiY,
+    1,1,0,c_white,alpha);
 </string>
           </argument>
         </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>425</id>
+        <kind>4</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
       </action>
     </event>
   </events>

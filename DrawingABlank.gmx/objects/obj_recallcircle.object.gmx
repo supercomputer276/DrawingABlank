@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-100</depth>
+  <depth>-5</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,7 +25,78 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>debugString = "";
+            <string>flag = false;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>301</id>
+        <kind>0</kind>
+        <userelative>-1</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_set_alarm</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>0</kind>
+            <string>1</string>
+          </argument>
+          <argument>
+            <kind>4</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>flag = true;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>segmentLength = r / 10;
+alarm[1] = 30;
 </string>
           </argument>
         </arguments>
@@ -48,25 +119,31 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///DEBUG: input check string
-
-/*debugString = "";
-if(input_check(input.move_left)) debugString = "LEFT";
-if(input_check(input.move_right)) debugString = "RIGHT";
-if(input_check(input.move_up)) debugString = "UP";
-if(input_check(input.move_down)) debugString = "DOWN";
-if(input_check(input.action_primary)) debugString = "BUT. A";
-if(input_check(input.action_secondary)) debugString = "BUT. B";
-if(input_check(input.brush_draw)) debugString = "DRAW";
-if(input_check(input.brush_flickpress)) debugString = "FLICK";
-*/
-debugString = TMCT_GetSegment(0);
+            <string>if(flag) {
+    r -= segmentLength;
+    if(r &lt;= 0) {
+        //run recall on all voided objects
+        show_debug_message("-- RECALLING --");
+        for(var i = 0; i &lt; ds_list_size(targetFullList) / 2; i++) {
+            var target = getTargetableObject(i,1);
+            show_debug_message(object_get_name(target));
+            for(var j = 0; j &lt; instance_number(target); j++) {
+                var inst = instance_find(target,j);
+                refillBlots += getTargetableVoid(inst,1);
+                effect_create_above(ef_ring,inst.x+inst.sprite_width/2,
+                    inst.y+inst.sprite_height/2,0,c_black);
+                with(inst) event_user(0);
+            }
+        }
+        instance_destroy();
+    }
+}
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -83,76 +160,8 @@ debugString = TMCT_GetSegment(0);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///tint the screen while drawing
-if(instance_exists(obj_drawmark)) {
-    draw_set_alpha(0.5);
-    draw_rectangle_colour(0,0,_gui_width,_gui_height,
-        c_white,c_white,c_white,c_white,false);
-    draw_set_alpha(1);
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///draw HUD
-var hudX = 8, hudY = 8;
-var hudString = "";
-//assemblue HUD display
-//vitality
-hudString += getSpecialCharacter(specialCharacter.heart_full);
-if(currentHealth &lt; 100) hudString += "0";
-if(currentHealth &lt; 10) hudString += "0";
-hudString += string(currentHealth);
-//blots
-hudString += "#";
-if(currentBlots &lt; 100) hudString += "B";
-if(currentBlots &lt; 10) hudString += "0";
-hudString += string(currentBlots);
-if(refillBlots &gt; 0) {
-    if(refillBlots &lt; 100) hudString += chr(specialCharacter.arrow_left);
-    if(refillBlots &lt; 10) hudString += "0";
-    hudString += string(refillBlots);
-}
-//brush (header)
-hudString += "#" + getSpecialCharacter(specialCharacter.brush);
-//DEBUG
-hudString += "##" + debugString;
-//draw HUD
-draw_sprite_string_color(spr_font,hudX+1,hudY+1,hudString,c_black,1);
-draw_sprite_string_color(spr_font,hudX,hudY,hudString,c_white,1);
-//draw brush meter
-var dacurrBrush = currentBrush;
-for(var i = 0; i &lt; maxBrush div 8; i++) {
-    draw_sprite_string_color(spr_font,hudX+1+8+(8*i),hudY+1+8+8,
-        getSpecialCharacter(specialCharacter.meter_8),c_black,1);
-    var marker, col;
-    if(dacurrBrush &gt;= 8) marker = 8;
-    else marker = dacurrBrush;
-    marker = max(specialCharacter.meter_0 + marker, specialCharacter.meter_0);
-    col = c_white;
-    if(instance_exists(obj_brush))
-        if(obj_brush.deadBrush)
-            col = $7C7C7C;
-    draw_sprite_string_color(spr_font,hudX+8+(8*i),hudY+8+8,
-        chr(marker),col,1);
-    dacurrBrush -= 8;
-}
+            <string>//draw thick-bordered circle
+draw_circle_outline(x,y,r,4,c_black);
 </string>
           </argument>
         </arguments>

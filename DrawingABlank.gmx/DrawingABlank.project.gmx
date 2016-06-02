@@ -15,12 +15,14 @@
     </sprites>
     <sprites name="environment">
       <sprite>sprites\spr_wall</sprite>
+      <sprite>sprites\spr_matter_block_basic</sprite>
     </sprites>
     <sprites name="player">
       <sprite>sprites\spr_player</sprite>
       <sprite>sprites\spr_brush</sprite>
       <sprite>sprites\spr_blot</sprite>
       <sprite>sprites\spr_blottarget</sprite>
+      <sprite>sprites\spr_drawmark</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background">
@@ -78,19 +80,36 @@
       <script>scripts\input_check_general.gml</script>
       <script>scripts\input_axis.gml</script>
     </scripts>
+    <scripts name="drawing_test">
+      <script>scripts\drawing_test_circle.gml</script>
+    </scripts>
+    <script>scripts\draw_circle_outline.gml</script>
+    <scripts name="voidTargetLists">
+      <script>scripts\checkTargetable.gml</script>
+      <script>scripts\getTargetableVoid.gml</script>
+      <script>scripts\getTargetableObject.gml</script>
+    </scripts>
   </scripts>
   <objects name="objects">
     <objects name="environment">
       <object>objects\obj_wall</object>
+      <object>objects\obj_matter_block_basic_solid</object>
+      <object>objects\obj_matter_block_basic_phased</object>
     </objects>
     <objects name="control">
       <object>objects\obj_textbox</object>
       <object>objects\obj_init</object>
       <object>objects\obj_hud</object>
+      <object>objects\obj_debug_circle</object>
+      <object>objects\obj_debug_ellipse</object>
     </objects>
     <objects name="player">
       <object>objects\obj_player</object>
       <object>objects\obj_brush</object>
+      <object>objects\obj_drawmark</object>
+      <object>objects\obj_drawtarget</object>
+      <object>objects\obj_voidblot</object>
+      <object>objects\obj_recallcircle</object>
     </objects>
   </objects>
   <rooms name="rooms">
