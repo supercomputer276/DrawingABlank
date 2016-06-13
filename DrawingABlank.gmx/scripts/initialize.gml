@@ -114,6 +114,7 @@ recallCircleY = 0;
 recallCircleRadius = 0;
 
 setupTargetData();
+setupParticles();
 
 #define setupGestures
 ///setupGestures()
@@ -491,11 +492,54 @@ TMCT_AddGesture("CIRCLE","460134",true);
 //list of all objects that can be filled with Void
 // (as some objects must be children of different objects than others)
 targetEmptyList = ds_list_create();
-ds_list_add(targetEmptyList,obj_matter_block_basic_solid);
-ds_list_add(targetEmptyList,1);
+ds_list_add(targetEmptyList,obj_matter_block_basic_solid, 1);
+ds_list_add(targetEmptyList,obj_matter_block_bit_solid, 1);
+ds_list_add(targetEmptyList,obj_void_block_basic_phased, 1);
+ds_list_add(targetEmptyList,obj_matter_block_large_solid, -1);
+ds_list_add(targetEmptyList,obj_void_block_large_phased, -1);
 
 //list of all objects that are filled with Void
 // (for the same reasons as bove)
 targetFullList = ds_list_create();
-ds_list_add(targetFullList,obj_matter_block_basic_phased);
-ds_list_add(targetFullList,1);
+ds_list_add(targetFullList,obj_matter_block_basic_phased, 1);
+ds_list_add(targetFullList,obj_matter_block_bit_phased, 1);
+ds_list_add(targetFullList,obj_void_block_basic_solid, 1);
+ds_list_add(targetFullList,obj_matter_block_large_phased, -1);
+ds_list_add(targetFullList,obj_void_block_large_solid, -1);
+
+#define setupParticles
+///setupParticles()
+/*
+    Initalizes particle system representing Void and Matter activity.
+*/
+globalvar particleSystem,
+    checkpointParticle, deathParticle,
+    checkpointEmitter, deathEmitter;
+
+//particle system
+particleSystem = part_system_create();
+part_system_depth(particleSystem,9);
+
+//checkpoint particle type
+checkpointParticle = part_type_create();
+part_type_shape(checkpointParticle,pt_shape_disk);
+part_type_size(checkpointParticle,0.1,0.3,0,0);
+part_type_color1(checkpointParticle,c_black);
+part_type_alpha2(checkpointParticle,0.9,0);
+part_type_life(checkpointParticle,3,8);
+part_type_speed(checkpointParticle,2,5,0,0);
+part_type_direction(checkpointParticle,0,360,0,0);
+
+//death particle type - a little more solid
+deathParticle = part_type_create();
+part_type_shape(deathParticle,pt_shape_disk);
+part_type_size(deathParticle,0.2,0.5,0,0);
+part_type_color1(deathParticle,c_black);
+part_type_alpha2(deathParticle,0.8,0.8);
+part_type_life(deathParticle,4,10);
+part_type_speed(deathParticle,2,5,0,0);
+part_type_direction(deathParticle,0,360,0,0);
+
+//there's only one emitter, it just moves
+checkpointEmitter = part_emitter_create(particleSystem);
+deathEmitter = part_emitter_create(particleSystem);

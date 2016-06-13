@@ -81,7 +81,7 @@ for(var j = 1; j <= string_length(spritestringText); j+= 1)
     }
     //check for exceeding width limit
     if(spritestringWidth > 0) {
-        if(char == " " || char == "-") { //delimiter
+        if(char == " " || char == "-" || char == "#") { //delimiter
             var seekChar, increment = 0, deadSpace = 0;
             //deadSpace keeps track of how may characters in the string are not displayed (\ tags)
             do {

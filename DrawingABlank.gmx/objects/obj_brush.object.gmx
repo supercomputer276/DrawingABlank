@@ -192,13 +192,8 @@ TMCT_SetDeviceGesture(0,TMCT_SegmentToGestureName( TMCT_GetSegment(0)));
             <string>///input: drawing void
 if(canDraw &amp;&amp; input_check(input.brush_draw) &amp;&amp; currentBrush &gt; 0 &amp;&amp; !deadBrush) {
     ds_list_add(drawing,instance_create(x,y,obj_drawmark));
-    brushSpendTimer++;
-    if(brushSpendTimer &gt;= brushSpendValue) {
-        currentBrush--;
-        brushSpendTimer = 0;
-        if(currentBrush &lt;= 0)
-            event_user(0);
-    }
+    event_user(1); //tick down the brush timer
+    if(currentBrush &lt;= 0) event_user(0); //commit the drawing if the brush runs out
 }
 if(input_check_released(input.brush_draw) &amp;&amp; canDraw) {
     event_user(0);
@@ -233,14 +228,7 @@ if(input_get(input.brush_flickmouse)) {
                 var shot = instance_create(obj_player.x,obj_player.y,obj_voidblot);
                 shot.direction = point_direction(shot.x,shot.y,x,y);
             }
-            brushSpendTimer++;
-            if(brushSpendTimer &gt;= brushSpendValue) {
-                currentBrush--;
-                brushSpendTimer = 0;
-                if(currentBrush &lt;= 0) {
-                    deadBrush = true;
-                }
-            }
+            event_user(1); //tick down the Brush meter
         }
         blotFlickTimer++;
         if(blotFlickTimer &gt;= blotFlickValue) blotFlickTimer = 0;
@@ -249,6 +237,37 @@ if(input_get(input.brush_flickmouse)) {
 }
 else {
     //flick based on axis input
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///TICK THE BRUSH TIMER
+brushSpendTimer++;
+if(brushSpendTimer &gt;= brushSpendValue) {
+    currentBrush--;
+    brushSpendTimer = 0;
+    if(currentBrush &lt;= 0) {
+        deadBrush = true;
+    }
 }
 </string>
           </argument>
@@ -275,8 +294,6 @@ else {
             <string>///FINISH A DRAWING
 //reset timers and disable drawing if brush meter ran out
 brushSpendTimer = 0;
-if(currentBrush &lt;= 0)
-    deadBrush = true;
 //check for gestures
 var last_valid_shape = TMCT_GetCurrentGesture(0);
 //if(last_valid_shape == "CIRCLE") {
@@ -294,8 +311,16 @@ else {
     //show_debug_message("-- CHECKING DRAWING FOR VOIDABLE --");
     for(var i = 0; i &lt; instance_number(obj_drawmark); i++) {
         var thisPoint = instance_find(obj_drawmark,i);
-        var targetPoint = instance_position(thisPoint.x,thisPoint.y,all);
-        //show_debug_message("Point " + string(i) + ": targetPoint = " + string(targetPoint));
+        var thisX = thisPoint.x, thisY = thisPoint.y;
+        instance_deactivate_object(obj_drawmark);
+        instance_deactivate_object(obj_brush);
+        var targetPoint = instance_position(thisX,thisY,all);
+        instance_activate_object(obj_brush);
+        instance_activate_object(obj_drawmark);
+        //var debugStr = "Point " + string(i) + ": targetPoint = ";
+        //if(targetPoint != noone) debugStr += object_get_name(targetPoint.object_index);
+        //else debugStr += "noone";
+        //show_debug_message(debugStr);
         if(checkTargetable(targetPoint,0)) {
             //voidable
             if(ds_list_find_index(targetList,targetPoint) == -1) {
@@ -307,12 +332,16 @@ else {
     //for each instance in targetList, create targeting object 
     for(var i = 0; i &lt; ds_list_size(targetList); i++) {
         var thisTarget = ds_list_find_value(targetList,i);
-        var targeting = instance_create(
-            thisTarget.x+(thisTarget.sprite_width/2),
-            thisTarget.y+(thisTarget.sprite_height/2),
-            obj_drawtarget);
-        targeting.delayTimer = (i * 10);
-        targeting.myTarget = thisTarget;
+        var potential = getTargetableVoid(thisTarget,0);
+        if(potential == -1) potential = thisTarget.voidAmount;
+        for(var p = 0; p &lt; potential; p++) {
+            var targeting = instance_create(
+                thisTarget.x+(thisTarget.sprite_width/2),
+                thisTarget.y+(thisTarget.sprite_height/2),
+                obj_drawtarget);
+            targeting.delayTimer = (instance_number(obj_drawtarget)-1) * 10;
+            targeting.myTarget = thisTarget;
+        }
     }
     ds_list_destroy(targetList);
 }

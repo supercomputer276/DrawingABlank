@@ -149,7 +149,7 @@ if(frame != noone) {
 }
 //draw text if the dimensions fit
 if(height == targetHeight &amp;&amp; width == targetWidth) {
-    draw_sprite_string_ext_color(spr_font,frameX+pieceWidth,frameY,text,
+    draw_sprite_string_ext_color(spr_font,frameX,frameY,text,
         0,width,
         color,1);
 }

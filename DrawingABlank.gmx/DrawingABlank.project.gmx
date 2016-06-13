@@ -15,7 +15,16 @@
     </sprites>
     <sprites name="environment">
       <sprite>sprites\spr_wall</sprite>
-      <sprite>sprites\spr_matter_block_basic</sprite>
+      <sprites name="targetable">
+        <sprite>sprites\spr_matter_block_basic</sprite>
+        <sprite>sprites\spr_void_block_basic</sprite>
+        <sprite>sprites\spr_matter_block_bit</sprite>
+        <sprite>sprites\spr_void_block_bit</sprite>
+        <sprite>sprites\spr_matter_block_large</sprite>
+        <sprite>sprites\spr_void_block_large</sprite>
+        <sprite>sprites\spr_matter_block_arrow</sprite>
+        <sprite>sprites\spr_void_block_arrow</sprite>
+      </sprites>
     </sprites>
     <sprites name="player">
       <sprite>sprites\spr_player</sprite>
@@ -27,6 +36,7 @@
   </sprites>
   <backgrounds name="background">
     <background>background\bgd_guide</background>
+    <background>background\bgd_tiles_glen</background>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -37,6 +47,7 @@
       <script>scripts\draw_sprite_string_ext.gml</script>
       <script>scripts\draw_sprite_string_ext_color.gml</script>
       <script>scripts\draw_sprite_string_transformed.gml</script>
+      <script>scripts\draw_sprite_string_transformed_color.gml</script>
       <script>scripts\getHexValue.gml</script>
       <script>scripts\getSpecialCharacter.gml</script>
     </scripts>
@@ -89,12 +100,29 @@
       <script>scripts\getTargetableVoid.gml</script>
       <script>scripts\getTargetableObject.gml</script>
     </scripts>
+    <scripts name="bitmap">
+      <script>scripts\bitmap_get_value.gml</script>
+      <script>scripts\bitmap_set_value.gml</script>
+    </scripts>
   </scripts>
   <objects name="objects">
     <objects name="environment">
       <object>objects\obj_wall</object>
-      <object>objects\obj_matter_block_basic_solid</object>
-      <object>objects\obj_matter_block_basic_phased</object>
+      <objects name="targetable">
+        <object>objects\obj_matter_block_basic_solid</object>
+        <object>objects\obj_matter_block_large_solid</object>
+        <object>objects\obj_matter_block_bit_solid</object>
+        <object>objects\obj_matter_block_arrow_solid</object>
+        <object>objects\obj_void_block_basic_phased</object>
+        <object>objects\obj_void_block_large_phased</object>
+        <objects name="voidfilled">
+          <object>objects\obj_matter_block_basic_phased</object>
+          <object>objects\obj_matter_block_large_phased</object>
+          <object>objects\obj_matter_block_bit_phased</object>
+          <object>objects\obj_void_block_basic_solid</object>
+          <object>objects\obj_void_block_large_solid</object>
+        </objects>
+      </objects>
     </objects>
     <objects name="control">
       <object>objects\obj_textbox</object>
@@ -102,6 +130,7 @@
       <object>objects\obj_hud</object>
       <object>objects\obj_debug_circle</object>
       <object>objects\obj_debug_ellipse</object>
+      <object>objects\obj_pause</object>
     </objects>
     <objects name="player">
       <object>objects\obj_player</object>

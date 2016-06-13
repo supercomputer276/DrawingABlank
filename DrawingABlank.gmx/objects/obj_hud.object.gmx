@@ -31,6 +31,30 @@
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///update view
+event_user(0);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -61,6 +85,68 @@ if(input_check(input.brush_draw)) debugString = "DRAW";
 if(input_check(input.brush_flickpress)) debugString = "FLICK";
 */
 debugString = TMCT_GetSegment(0);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///update which screen the player's on (standard)
+var currXview = view_xview[0],
+    currYview = view_yview[0];
+if(instance_exists(obj_player))
+{
+    view_xview[0] = median(0,
+        floor(obj_player.x/view_wview[0])*view_wview[0],
+        room_width-view_wview[0]);
+    view_yview[0] = median(0,
+        floor(obj_player.y/view_hview[0])*view_hview[0],
+        room_height-view_hview[0]);
+}
+//actions to perform if the screen is different from the last screen
+if(view_xview[0] != currXview || view_yview[0] != currYview) {
+    //
+    show_debug_message("Screen change");
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="4">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>event_perform(ev_step,ev_step_begin);
 </string>
           </argument>
         </arguments>

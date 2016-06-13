@@ -26,7 +26,8 @@
           <argument>
             <kind>1</kind>
             <string>///create brush
-instance_create(x,y,obj_brush);
+if(!instance_exists(obj_brush))
+    instance_create(x,y,obj_brush);
 </string>
           </argument>
         </arguments>
@@ -60,20 +61,24 @@ mercyInvincibility = 0;
 //hit protection
 mercySetting = 120;
 //how much to set the time to on hit
+
+//STATE FLAGS
 recoilFlag = false;
 //if the player is flying from taking a hit; set to false when they land
-
 deadFlag = false;
 //whether or not the player is dead and shouldn't do anything
+ledgeFlag = false;
+//indicates the player is clinging to a ledge
 
-//constants (or close to such)
-MOVEMAX = 1; //max movement speed
+//CONSTANTS (or close to such)
+MOVEMAX = 2; //max movement speed
 MOVEINC = 0.25; //increment speed
 NUMJUMPS = 1; //number of available total jumps
 STRJUMP1 = -3.75; //strength of first jump
 INCJUMP = 0.36; //subtracted from jumps while the button is held down
 CUTJUMP = -2; //vspeed must be less than this to add extra height
 STRJUMP2 = -6; //strength of additional jumps
+LEDGEJUMP = -2.75; //strength of jumps from clinging to a ledge
 RECOILMAX = 5; //recoil maximum speed
 </string>
           </argument>
@@ -99,7 +104,10 @@ RECOILMAX = 5; //recoil maximum speed
             <kind>1</kind>
             <string>///gravity
 gravity_direction = 270; //down
-if(place_free(x,y+1)) {
+if(ledgeFlag) { //don't fall while holding an edge
+    gravity = 0;
+}
+else if(place_free(x,y+1)) {
     gravity = worldGravity;
     //show_debug_message(string(vspeed));
 }
@@ -132,18 +140,20 @@ if(vspeed &gt; 11) vspeed = 11;
             <string>///input
 if(input_check_pressed(input.passive_primary)) {
     //open pause menu
-    //handled by obj_hud
+    instance_create(view_xview[0]+view_wview[0]/2,
+        view_yview[0]+view_hview[0]/2,
+        obj_pause);
 }
 if(input_check(input.move_left)) {
     //move left
-    if(!recoilFlag) {
+    if(!recoilFlag &amp;&amp; !ledgeFlag) {
         horMovement -= MOVEINC;
         facing = "left";
     }
 }
 if(input_check(input.move_right)) {
     //move right
-    if(!recoilFlag) {
+    if(!recoilFlag &amp;&amp; !ledgeFlag) {
         horMovement += MOVEINC;
         facing = "right";
     }
@@ -151,9 +161,20 @@ if(input_check(input.move_right)) {
 if(input_check_pressed(input.move_up)) {
     //
 }
+if(input_check(input.move_down)) {
+    //drop from a ledge
+    if(ledgeFlag) {
+        ledgeFlag = false;
+    }
+}
 if(input_check_pressed(input.action_primary)) {
     //jump
-    if(jumpsMade == 0) { //first jump
+    if(ledgeFlag) { //hop from edge
+        vspeed = LEDGEJUMP;
+        jumpsMade = 1;
+        ledgeFlag = false;
+    }
+    else if(jumpsMade == 0) { //first jump
         if(!place_free(x,y+1)) {
             vspeed = STRJUMP1; //-8.6
             jumpsMade += 1;
@@ -219,21 +240,42 @@ else
 //move the character
 var increment = 1;
 signCheck = sign(horMovement) * increment;
-repeat(abs(horMovement)) {
-//for(var i = increment; i &lt; abs(horMovement); i += increment) {
-    if(place_free(x + signCheck,y)) {
-        x += signCheck;
-        if(!place_free(x,y+2) &amp;&amp; place_free(x,y+1))
-            y += 1;
+if(ledgeFlag) {
+    //no movement while holding a ledge
+    horMovement = 0;
+}
+else {
+    //check if ledge cling
+    var xval = x+signCheck*(sprite_width/2+1),
+        ytop = y-(sprite_height/2), ybot = y+(sprite_height/2)-1,
+        yper = 0.25,
+        yval = y-(sprite_height/2)+(yper*sprite_height);
+    if(!collision_line(xval, ytop, xval, yval, obj_wall, false, true) &amp;&amp;
+        collision_line(xval, yval, xval, ybot, obj_wall, false, true) &amp;&amp;
+        !place_meeting(x,y+sprite_height,obj_wall) &amp;&amp;
+        vspeed &gt; 0) {
+        vspeed = 0;
+        horMovement = 0;
+        gravity = 0;
+        y = collision_line(xval, yval, xval, ybot, obj_wall, false, true).y + 4;
+        ledgeFlag = true;
     }
-    else {
-        if(place_free(x + signCheck,y - 1)) { //slope
-            y -= 1;
+    else repeat(abs(horMovement)) { //normal movement
+    //for(var i = increment; i &lt; abs(horMovement); i += increment) {
+        if(place_free(x + signCheck,y)) {
             x += signCheck;
+            if(!place_free(x,y+2) &amp;&amp; place_free(x,y+1))
+                y += 1;
         }
-        else { //solid obstruction
-            horMovement = 0;
-            break;
+        else {
+            if(place_free(x + signCheck,y - 1)) { //slope
+                y -= 1;
+                x += signCheck;
+            }
+            else { //solid obstruction
+                horMovement = 0;
+                break;
+            }
         }
     }
 }
@@ -296,6 +338,32 @@ if(other.y &lt; y &amp;&amp; !place_free(x,y+vspeed)) {
     move_contact_solid(90,11);
     vspeed = 0;
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///draw VOID IMP snapped to pixel grid
+draw_sprite_ext(sprite_index,image_index,
+    round(x),round(y),
+    image_xscale,image_yscale,image_angle,image_blend,image_alpha);
 </string>
           </argument>
         </arguments>

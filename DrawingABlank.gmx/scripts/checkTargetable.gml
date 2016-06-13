@@ -6,6 +6,8 @@
     argument1 - boolean - check empty (false) or full (true) targetable list
     returns - boolean - if the instance is targetable
 */
+if(!instance_exists(argument0)) return false;
+
 var obj = argument0.object_index;
 var list;
 if(argument1) list = targetFullList;
