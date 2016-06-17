@@ -16,7 +16,8 @@ globalvar currentHealth, maxHealth,
     blotFlickTimer, blotFlickValue,
     blotRefillTimer, blotRefillValue,
     brushSpendTimer, brushSpendValue,
-    brushRechargeTimer, brushRechargeValue;
+    brushRechargeTimer, brushRechargeValue,
+    glyphList, glyphLimit;
 currentHealth = 20; //current vitality
 maxHealth = 20; //maximum vitality
 currentBlots = 10; //current blots
@@ -33,6 +34,10 @@ brushSpendTimer = 0; //steps counted to spend one tick on the brush meter
 brushSpendValue = 15; //how many steps before one tick on the brush meter is spent drawing
 brushRechargeTimer = 0; //steps counted to track recharging the brush
 brushRechargeValue = 60; //how many steps to recharge one tick on the brush meter
+
+glyphList = ds_list_create(); //list of docked glyph object instances
+glyphLimit = 1; //how many glyphs can be in the list
+
 
 /*
  INPUT
@@ -100,6 +105,7 @@ enum specialCharacter {
     meter_6,
     meter_7,
     meter_8,
+    circle,
 };
 
 /*
@@ -497,6 +503,8 @@ ds_list_add(targetEmptyList,obj_matter_block_bit_solid, 1);
 ds_list_add(targetEmptyList,obj_void_block_basic_phased, 1);
 ds_list_add(targetEmptyList,obj_matter_block_large_solid, -1);
 ds_list_add(targetEmptyList,obj_void_block_large_phased, -1);
+ds_list_add(targetEmptyList,obj_matter_block_arrow_solid, 1);
+ds_list_add(targetEmptyList,obj_void_block_arrow_phased, 1);
 
 //list of all objects that are filled with Void
 // (for the same reasons as bove)
@@ -506,6 +514,8 @@ ds_list_add(targetFullList,obj_matter_block_bit_phased, 1);
 ds_list_add(targetFullList,obj_void_block_basic_solid, 1);
 ds_list_add(targetFullList,obj_matter_block_large_phased, -1);
 ds_list_add(targetFullList,obj_void_block_large_solid, -1);
+ds_list_add(targetFullList,obj_matter_block_arrow_phased, 1);
+ds_list_add(targetFullList,obj_void_block_arrow_solid, 1);
 
 #define setupParticles
 ///setupParticles()

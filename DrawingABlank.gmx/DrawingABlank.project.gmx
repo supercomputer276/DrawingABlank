@@ -33,6 +33,10 @@
       <sprite>sprites\spr_blottarget</sprite>
       <sprite>sprites\spr_drawmark</sprite>
     </sprites>
+    <sprites name="upgrades">
+      <sprite>sprites\spr_upgrade_blotup</sprite>
+      <sprite>sprites\sprite18</sprite>
+    </sprites>
   </sprites>
   <backgrounds name="background">
     <background>background\bgd_guide</background>
@@ -104,6 +108,7 @@
       <script>scripts\bitmap_get_value.gml</script>
       <script>scripts\bitmap_set_value.gml</script>
     </scripts>
+    <script>scripts\isPushable.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="environment">
@@ -115,12 +120,15 @@
         <object>objects\obj_matter_block_arrow_solid</object>
         <object>objects\obj_void_block_basic_phased</object>
         <object>objects\obj_void_block_large_phased</object>
+        <object>objects\obj_void_block_arrow_phased</object>
         <objects name="voidfilled">
           <object>objects\obj_matter_block_basic_phased</object>
           <object>objects\obj_matter_block_large_phased</object>
           <object>objects\obj_matter_block_bit_phased</object>
+          <object>objects\obj_matter_block_arrow_phased</object>
           <object>objects\obj_void_block_basic_solid</object>
           <object>objects\obj_void_block_large_solid</object>
+          <object>objects\obj_void_block_arrow_solid</object>
         </objects>
       </objects>
     </objects>
@@ -138,7 +146,13 @@
       <object>objects\obj_drawmark</object>
       <object>objects\obj_drawtarget</object>
       <object>objects\obj_voidblot</object>
-      <object>objects\obj_recallcircle</object>
+      <objects name="glyphs">
+        <object>objects\obj_recallcircle</object>
+      </objects>
+    </objects>
+    <objects name="upgrades">
+      <object>objects\obj_upgrade_blotup</object>
+      <object>objects\obj_upgrade_blotup_blot</object>
     </objects>
   </objects>
   <rooms name="rooms">

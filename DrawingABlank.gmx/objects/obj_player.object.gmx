@@ -69,10 +69,13 @@ deadFlag = false;
 //whether or not the player is dead and shouldn't do anything
 ledgeFlag = false;
 //indicates the player is clinging to a ledge
+pushFlag = false;
+//indicates the player is pushing against something
 
 //CONSTANTS (or close to such)
 MOVEMAX = 2; //max movement speed
 MOVEINC = 0.25; //increment speed
+PUSHMAX = 1; //max movement speed while pushing something
 NUMJUMPS = 1; //number of available total jumps
 STRJUMP1 = -3.75; //strength of first jump
 INCJUMP = 0.36; //subtracted from jumps while the button is held down
@@ -193,6 +196,14 @@ if(input_check(input.action_primary)) {
     if(vspeed &lt; CUTJUMP)
         vspeed -= INCJUMP;
 }
+if(input_check_pressed(input.action_secondary)) {
+    //trigger glyph
+    if(ds_list_size(glyphList) &gt; 0) {
+        var g = ds_list_find_value(glyphList,0);
+        with(g) event_user(0);
+        ds_list_delete(glyphList,0);
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -234,12 +245,15 @@ if(horMovement != 0 &amp;&amp; !recoilFlag) {
 //limit horizontal movement
 if(recoilFlag)
     horMovement = min(RECOILMAX, max(horMovement, -RECOILMAX));
+else if(pushFlag)
+    horMovement = min(PUSHMAX, max(horMovement, -PUSHMAX));
 else
     horMovement = min(MOVEMAX, max(horMovement, -MOVEMAX));
 
 //move the character
 var increment = 1;
 signCheck = sign(horMovement) * increment;
+pushFlag = false;
 if(ledgeFlag) {
     //no movement while holding a ledge
     horMovement = 0;
@@ -272,9 +286,19 @@ else {
                 y -= 1;
                 x += signCheck;
             }
-            else { //solid obstruction
-                horMovement = 0;
-                break;
+            //TODO: if there's a pushable block here that has space past it
+            else {
+                pushFlag = true;
+                var pushBlock = instance_place(x+signCheck,y,obj_wall);
+                if(!place_free(x,y+1) //on the ground
+                    &amp;&amp; isPushable(pushBlock,signCheck)) {
+                    pushBlock.x += signCheck;
+                    x += signCheck;
+                }
+                else { //solid obstruction
+                    horMovement = 0;
+                    break;
+                }
             }
         }
     }

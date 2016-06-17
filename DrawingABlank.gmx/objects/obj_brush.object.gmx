@@ -294,7 +294,7 @@ if(brushSpendTimer &gt;= brushSpendValue) {
             <string>///FINISH A DRAWING
 //reset timers and disable drawing if brush meter ran out
 brushSpendTimer = 0;
-//check for gestures
+//check for glyphs
 var last_valid_shape = TMCT_GetCurrentGesture(0);
 //if(last_valid_shape == "CIRCLE") {
 //if(drawing_test_circle()) {
@@ -303,6 +303,7 @@ if(last_valid_shape == "CIRCLE" &amp;&amp; drawing_test_circle()) {
     show_debug_message("CIRCLE drawn");
     var recaller = instance_create(recallCircleX,recallCircleY,obj_recallcircle);
     recaller.r = recallCircleRadius;
+    ds_list_add(glyphList,recaller);
 }
 //if none were found, check for all targetable objects underneath and void them
 else {
@@ -323,7 +324,13 @@ else {
         //show_debug_message(debugStr);
         if(checkTargetable(targetPoint,0)) {
             //voidable
-            if(ds_list_find_index(targetList,targetPoint) == -1) {
+            //TODO: check to make this object isn't in the process of being painted
+            // already, by checking if it has any obj_drawtarget instances on it
+            if(ds_list_find_index(targetList,targetPoint) == -1
+                &amp;&amp; !collision_rectangle(targetPoint.x,targetPoint.y,
+                    targetPoint.x+targetPoint.sprite_width,
+                    targetPoint.y+targetPoint.sprite_height,
+                    obj_drawtarget,true,true)) {
                 //add new target to list
                 ds_list_add(targetList,targetPoint);
             }
@@ -344,6 +351,12 @@ else {
         }
     }
     ds_list_destroy(targetList);
+}
+//if more glyphs were added than can be held, remove the front of the list
+if(ds_list_size(glyphList) &gt; glyphLimit) {
+    var target = ds_list_find_value(glyphList,0);
+    with(target) instance_destroy();
+    ds_list_delete(glyphList,0);
 }
 //clear drawing
 with(obj_drawmark) instance_destroy();

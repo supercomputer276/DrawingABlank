@@ -53,9 +53,11 @@ voidContained = 0; //how much void is currently in the object
             <kind>1</kind>
             <string>///WHAT TO DO IF NO LONGER FILLED WITH VOID
 //If partically filled when a Void-removal event occurs, return Void contained
-refillBlots += voidContained;
-voidContained = 0;
-with(other) stuffdoneFlag = true;
+if(voidContained &gt; 0) {
+    refillBlots += voidContained;
+    voidContained = 0;
+    with(other) stuffdoneFlag = true;
+}
 </string>
           </argument>
         </arguments>

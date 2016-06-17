@@ -217,6 +217,17 @@ if(refillBlots &gt; 0) {
 }
 //brush (header)
 hudString += "#" + getSpecialCharacter(specialCharacter.brush);
+//glyph list
+hudString += "#";
+for(var i = 0; i &lt; glyphLimit; i++) {
+    var g = ds_list_find_value(glyphList,i);
+    if(!is_undefined(g)) {
+        hudString += getSpecialCharacter(g.icon);
+    }
+    else {
+        hudString += "_";
+    }
+}
 //DEBUG
 hudString += "##" + debugString;
 //draw HUD
