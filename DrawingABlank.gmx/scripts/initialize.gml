@@ -44,8 +44,9 @@ glyphLimit = 1; //how many glyphs can be in the list
  for handling player input configurations
 */
 //input control index
-globalvar inputSetup, controlSetup;
+globalvar inputSetup, controlSetup, analogState, analogPressed, analogReleased;
 enum input { //constants for inputSetup indices
+    move_analog, //whether or not D-pad movement is being handled with an analog stick
     move_left, //left on a D-pad
     move_right, //right on a D-pad
     move_up, //up on a D-pad
@@ -73,6 +74,10 @@ enum controlVariables {
 controlSetup[controlVariables.gamepad] = 0; //these are set, then used as inputs to generate the desired control scheme
 controlSetup[controlVariables.config1] = 0;
 controlSetup[controlVariables.config2] = 0;
+//These are used to track the status of analog inputs for simulating "pressed" and "released"
+analogState = ds_map_create();
+analogPressed = ds_map_create();
+analogReleased = ds_map_create();
 //if an options file exists, load configuration from there
 //set controls
 input_configure();
@@ -129,6 +134,7 @@ To be called by the initialize script only.
 Starts up TMC Touch and creates appropriate gesture commands.
 */
 TMCT_Init();
+TMCT_SetChangeRange(16);
 //circle: recall
 TMCT_AddGesture("CIRCLE","45670123",true); //counterclockwise
 TMCT_AddGesture("CIRCLE","07654321",true); //clockwise
@@ -479,6 +485,7 @@ TMCT_AddGesture("CIRCLE","0654321",true);
 TMCT_AddGesture("CIRCLE","560234",true);
 TMCT_AddGesture("CIRCLE","7654210",true);
 TMCT_AddGesture("CIRCLE","460134",true);
+
 #define setupTargetData
 ///setupTargetData()
 /*

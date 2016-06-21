@@ -10,6 +10,7 @@ show_debug_message("-- CONFIGURING INPUT --");
         inputSetup[input.gamepad] = -1;
         //base actions
         if(controlSetup[controlVariables.config1] == 0) {
+            inputSetup[input.move_analog] = false;
             inputSetup[input.move_left] = ord('A');
             inputSetup[input.move_right] = ord('D');
             inputSetup[input.move_up] = ord('W');
@@ -49,6 +50,7 @@ show_debug_message("-- CONFIGURING INPUT --");
         //TODO: add controller input configurations
         //base actions
         if(controlSetup[controlVariables.config1] == 0) {
+            inputSetup[input.move_analog] = false;
             inputSetup[input.move_left] = gp_padl;
             inputSetup[input.move_right] = gp_padr;
             inputSetup[input.move_up] = gp_padu;
@@ -58,11 +60,22 @@ show_debug_message("-- CONFIGURING INPUT --");
             inputSetup[input.passive_primary] = gp_start;
             inputSetup[input.passive_secondary] = gp_select;
         }
+        else if(controlSetup[controlVariables.config1] == 1) {
+            inputSetup[input.move_analog] = true;
+            inputSetup[input.move_left] = gp_axislh;
+            inputSetup[input.move_right] = gp_axislh;
+            inputSetup[input.move_up] = gp_axislv;
+            inputSetup[input.move_down] = gp_axislv;
+            inputSetup[input.action_primary] = gp_face1;
+            inputSetup[input.action_secondary] = gp_face2;
+            inputSetup[input.passive_primary] = gp_start;
+            inputSetup[input.passive_secondary] = gp_select;
+        }
         //drawing controls
         if(controlSetup[controlVariables.config2] == 0) {
             inputSetup[input.brush_mouse] = false;
-            inputSetup[input.brush_moveh] = gp_axislh;
-            inputSetup[input.brush_movev] = gp_axislv;
+            inputSetup[input.brush_moveh] = gp_axisrh;
+            inputSetup[input.brush_movev] = gp_axisrv;
             inputSetup[input.brush_draw] = gp_shoulderl;
             inputSetup[input.brush_flickmouse] = true;
             inputSetup[input.brush_flickpress] = gp_shoulderlb;
@@ -71,3 +84,36 @@ show_debug_message("-- CONFIGURING INPUT --");
         }
     }
 //}
+
+//initialize analog state checking based on the given values
+ds_map_clear(analogState);
+ds_map_clear(analogPressed);
+ds_map_clear(analogReleased);
+var checklist; checklist[2,2] = 0;
+//flag to check     horizontal axis    vertical axis    whether to negate condition
+checklist[0,0] = input.move_analog;
+checklist[0,1] = input.move_left;
+checklist[0,2] = input.move_up;
+checklist[0,3] = false;
+
+checklist[1,0] = input.brush_mouse;
+checklist[1,1] = input.brush_moveh;
+checklist[1,2] = input.brush_movev;
+checklist[1,3] = true;
+
+checklist[2,0] = input.brush_flickmouse;
+checklist[2,1] = input.brush_flickh;
+checklist[2,2] = input.brush_flickv;
+checklist[2,3] = true;
+for(var i = 0; i < array_height_2d(checklist); i++) {
+    var conditional = input_get(checklist[i,0]);
+    if(checklist[i,3]) conditional = !conditional;
+    if(conditional) {
+        analogState[? checklist[i,1]] = input_axis(checklist[i,1]);
+        analogState[? checklist[i,2]] = input_axis(checklist[i,2]);
+        analogPressed[? checklist[i,1]] = false;
+        analogPressed[? checklist[i,2]] = false;
+        analogReleased[? checklist[i,1]] = false;
+        analogReleased[? checklist[i,2]] = false;
+    }
+}

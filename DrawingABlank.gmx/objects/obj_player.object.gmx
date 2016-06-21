@@ -141,35 +141,73 @@ if(vspeed &gt; 11) vspeed = 11;
           <argument>
             <kind>1</kind>
             <string>///input
+//passive buttons (Start and Select)
 if(input_check_pressed(input.passive_primary)) {
     //open pause menu
     instance_create(view_xview[0]+view_wview[0]/2,
         view_yview[0]+view_hview[0]/2,
         obj_pause);
 }
-if(input_check(input.move_left)) {
+if(input_check_pressed(input.passive_secondary)) {
+    //reorder glyph list
+}
+//check directional movement
+var moveLeft, moveRight, moveUp, moveDown;
+if(input_get(input.move_analog)) { //axis input
+    //in order for "pressed" and "released" operations to function, the game
+    // must manually track when analogue input changes from 0 to not-0 and back
+    moveLeft[0] = input_axis(input.move_left) &lt; 0;
+    moveLeft[1] = moveLeft[0] &amp;&amp; input_check_pressed(input.move_left);
+    moveLeft[2] = moveLeft[0] &amp;&amp; input_check_released(input.move_left);
+    moveRight[0] = input_axis(input.move_right) &gt; 0;
+    moveRight[1] = moveRight[0] &amp;&amp; input_check_pressed(input.move_right);
+    moveRight[2] = moveRight[0] &amp;&amp; input_check_released(input.move_right);
+    moveUp[0] = input_axis(input.move_up) &lt; 0;
+    moveUp[1] = moveUp[0] &amp;&amp; input_check_pressed(input.move_up);
+    moveUp[2] = moveUp[0] &amp;&amp; input_check_released(input.move_up);
+    moveDown[0] = input_axis(input.move_down) &gt; 0;
+    moveDown[1] = moveDown[0] &amp;&amp; input_check_pressed(input.move_down);
+    moveDown[2] = moveDown[0] &amp;&amp; input_check_released(input.move_down);
+}
+else { //button input
+    moveLeft[0] = input_check(input.move_left);
+    moveLeft[1] = input_check_pressed(input.move_left);
+    moveLeft[2] = input_check_released(input.move_left);
+    moveRight[0] = input_check(input.move_right);
+    moveRight[1] = input_check_pressed(input.move_right);
+    moveRight[2] = input_check_released(input.move_right);
+    moveUp[0] = input_check(input.move_up);
+    moveUp[1] = input_check_pressed(input.move_up);
+    moveUp[2] = input_check_released(input.move_up);
+    moveDown[0] = input_check(input.move_down);
+    moveDown[1] = input_check_pressed(input.move_down);
+    moveDown[2] = input_check_released(input.move_down);
+}
+if(moveLeft[0]) {
     //move left
     if(!recoilFlag &amp;&amp; !ledgeFlag) {
         horMovement -= MOVEINC;
         facing = "left";
     }
 }
-if(input_check(input.move_right)) {
+if(moveRight[0]) {
     //move right
     if(!recoilFlag &amp;&amp; !ledgeFlag) {
         horMovement += MOVEINC;
         facing = "right";
     }
 }
-if(input_check_pressed(input.move_up)) {
+if(moveUp[1]) {
     //
+    show_debug_message("pressed UP");
 }
-if(input_check(input.move_down)) {
+if(moveDown[0]) {
     //drop from a ledge
     if(ledgeFlag) {
         ledgeFlag = false;
     }
 }
+//action buttons (A and B)
 if(input_check_pressed(input.action_primary)) {
     //jump
     if(ledgeFlag) { //hop from edge

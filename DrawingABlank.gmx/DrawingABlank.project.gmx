@@ -94,6 +94,7 @@
       <script>scripts\input_check_released.gml</script>
       <script>scripts\input_check_general.gml</script>
       <script>scripts\input_axis.gml</script>
+      <script>scripts\input_step.gml</script>
     </scripts>
     <scripts name="drawing_test">
       <script>scripts\drawing_test_circle.gml</script>

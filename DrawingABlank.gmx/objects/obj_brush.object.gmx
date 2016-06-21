@@ -70,6 +70,9 @@ if(input_get(input.brush_mouse)) {
 else {
     //adjust guiX and guiY based on input.brush_moveh
     // and input.brush_movev analog input
+    var scrollSpeed = 3;
+    guiX += input_axis(input.brush_moveh) * scrollSpeed;
+    guiY += input_axis(input.brush_movev) * scrollSpeed;
     
     //keep in boundaries
     if(guiX &lt; 0) guiX = 0;
@@ -168,7 +171,9 @@ if(!(input_check(input.brush_draw) || input_check(input.brush_flickpress)
             <kind>1</kind>
             <string>///perform gesture operations
 TMCT_OnStep();
+//show_debug_message("after step: " + TMCT_GetSegment(0));
 TMCT_SetDeviceGesture(0,TMCT_SegmentToGestureName( TMCT_GetSegment(0)));
+//show_debug_message(TMCT_GetCurrentGesture(0));
 </string>
           </argument>
         </arguments>

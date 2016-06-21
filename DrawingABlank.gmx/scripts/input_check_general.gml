@@ -34,7 +34,9 @@ else { //controller
     var gp = inputSetup[input.gamepad];
     if(targetKey == gp_axislh || targetKey == gp_axislv
         || targetKey == gp_axisrh || targetKey == gp_axisrv) {
-        return abs(gamepad_axis_value(gp,targetKey)) > 0;
+        if(mode == 0) return abs(gamepad_axis_value(gp,targetKey)) != 0;
+        else if(mode == 1) return analogPressed[? targetEnum];
+        else if(mode == 2) return analogReleased[? targetEnum];
     }
     else {
         if(mode == 0) return gamepad_button_check(gp,targetKey);

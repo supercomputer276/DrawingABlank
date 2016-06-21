@@ -9,7 +9,7 @@
 */
 var targetEnum = argument0;
 //automatically return false if the value is -1 (for no connected input)
-if(inputSetup[targetEnum] == -1) return false;
+if(inputSetup[input.gamepad] == -1) return false;
 //get key
 var targetKey = inputSetup[targetEnum];
 //check if axis
