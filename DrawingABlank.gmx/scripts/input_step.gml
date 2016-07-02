@@ -5,7 +5,7 @@
         for the purpose of faking "pressed" and "released" functionality on them.
 */
 //assemble sections to check
-var checklist; checklist[2,2] = 0;
+var checklist; checklist[2,3] = 0;
 //flag to check     horizontal axis    vertical axis    whether to negate condition
 checklist[0,0] = input.move_analog;
 checklist[0,1] = input.move_left;

@@ -47,7 +47,6 @@ show_debug_message("-- CONFIGURING INPUT --");
         }
         //show_debug_message("controller connected: " + string(gamepad_is_connected(inputSetup[input.gamepad])));
         gamepad_set_axis_deadzone(inputSetup[input.gamepad],0.5);
-        //TODO: add controller input configurations
         //base actions
         if(controlSetup[controlVariables.config1] == 0) {
             inputSetup[input.move_analog] = false;
@@ -81,6 +80,16 @@ show_debug_message("-- CONFIGURING INPUT --");
             inputSetup[input.brush_flickpress] = gp_shoulderlb;
             inputSetup[input.brush_flickh] = -1;
             inputSetup[input.brush_flickv] = -1;
+        }
+        else if(controlSetup[controlVariables.config2] == 1) {
+            inputSetup[input.brush_mouse] = false;
+            inputSetup[input.brush_moveh] = gp_axislh;
+            inputSetup[input.brush_movev] = gp_axislv;
+            inputSetup[input.brush_draw] = gp_shoulderl;
+            inputSetup[input.brush_flickmouse] = false;
+            inputSetup[input.brush_flickpress] = -1;
+            inputSetup[input.brush_flickh] = gp_axisrh;
+            inputSetup[input.brush_flickv] = gp_axisrv;
         }
     }
 //}

@@ -56,6 +56,29 @@ flag = false;
         </arguments>
       </action>
     </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>part_emitter_destroy(particleSystem,myEmitter);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="2" enumb="0">
       <action>
         <libid>1</libid>
@@ -74,6 +97,12 @@ flag = false;
           <argument>
             <kind>1</kind>
             <string>segmentLength = r / 10;
+
+myEmitter = part_emitter_create(particleSystem);
+part_emitter_region(particleSystem,myEmitter,
+    x - r - 4, x + r + 4, y - r - 4, y + r + 4,
+    ps_shape_ellipse, ps_distr_invgaussian);
+part_emitter_stream(particleSystem,myEmitter,glyphParticle,-8)
 </string>
           </argument>
         </arguments>
@@ -100,36 +129,14 @@ flag = false;
     r -= segmentLength;
     if(r &lt;= 0) {
         //run recall on all voided and partically voided objects
-        show_debug_message("-- RECALLING --");
-        //fully voided objects
-        for(var i = 0; i &lt; ds_list_size(targetFullList) / 2; i++) {
-            var target = getTargetableObject(i,1);
-            //show_debug_message(object_get_name(target));
-            for(var j = 0; j &lt; instance_number(target); j++) {
-                var inst = instance_find(target,j);
-                var potential = getTargetableVoid(inst,1);
-                if(potential == -1) potential = inst.voidAmount;
-                //show_debug_message(string(potential));
-                refillBlots += potential;
-                effect_create_above(ef_ring,inst.x+inst.sprite_width/2,
-                    inst.y+inst.sprite_height/2,0,c_black);
-                with(inst) event_user(0);
-            }
-        }//partially voided objects
-        for(var i = 0; i &lt; ds_list_size(targetEmptyList) / 2; i++) {
-            var target = getTargetableObject(i,0);
-            //show_debug_message(object_get_name(target));
-            for(var j = 0; j &lt; instance_number(target); j++) {
-                var inst = instance_find(target,j);
-                stuffdoneFlag = false;
-                with(inst) event_user(1);
-                if(stuffdoneFlag)
-                    effect_create_above(ef_ring,inst.x+inst.sprite_width/2,
-                        inst.y+inst.sprite_height/2,0,c_black);
-            }
-        }
+        voidRecall();
         instance_destroy();
     }
+}
+if(part_emitter_exists(particleSystem,myEmitter)) {
+    part_emitter_region(particleSystem,myEmitter,
+        x - r - 4, x + r + 4, y - r - 4, y + r + 4,
+        ps_shape_ellipse, ps_distr_invgaussian);
 }
 </string>
           </argument>

@@ -87,6 +87,8 @@ if(input_check(input.brush_flickpress)) debugString = "FLICK";
 debugString = TMCT_GetSegment(0);
 //debugString += "#" + string(input_axis(input.brush_moveh))
 //    + " " + string(input_axis(input.brush_movev));
+debugString += "#" + string(input_axis(input.brush_flickh))
+    + " " + string(input_axis(input.brush_flickv));
 </string>
           </argument>
         </arguments>

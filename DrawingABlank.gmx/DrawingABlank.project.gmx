@@ -12,6 +12,7 @@
       <sprite>sprites\spr_textborder</sprite>
       <sprite>sprites\spr_textboxmarker</sprite>
       <sprite>sprites\spr_font</sprite>
+      <sprite>sprites\spr_marker</sprite>
     </sprites>
     <sprites name="environment">
       <sprite>sprites\spr_wall</sprite>
@@ -25,6 +26,8 @@
         <sprite>sprites\spr_matter_block_arrow</sprite>
         <sprite>sprites\spr_void_block_arrow</sprite>
       </sprites>
+      <sprite>sprites\spr_rip_small</sprite>
+      <sprite>sprites\spr_rip_large</sprite>
     </sprites>
     <sprites name="player">
       <sprite>sprites\spr_player</sprite>
@@ -32,6 +35,9 @@
       <sprite>sprites\spr_blot</sprite>
       <sprite>sprites\spr_blottarget</sprite>
       <sprite>sprites\spr_drawmark</sprite>
+      <sprites name="poses">
+        <sprite>sprites\spr_voidimp_idle</sprite>
+      </sprites>
     </sprites>
     <sprites name="upgrades">
       <sprite>sprites\spr_upgrade_blotup</sprite>
@@ -110,6 +116,7 @@
       <script>scripts\bitmap_set_value.gml</script>
     </scripts>
     <script>scripts\isPushable.gml</script>
+    <script>scripts\voidRecall.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="environment">
@@ -132,6 +139,7 @@
           <object>objects\obj_void_block_arrow_solid</object>
         </objects>
       </objects>
+      <object>objects\obj_rip_small</object>
     </objects>
     <objects name="control">
       <object>objects\obj_textbox</object>
@@ -157,6 +165,7 @@
     </objects>
   </objects>
   <rooms name="rooms">
+    <room>rooms\rm_init</room>
     <room>rooms\rm_test</room>
   </rooms>
   <help>

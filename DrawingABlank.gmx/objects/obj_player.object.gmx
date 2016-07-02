@@ -88,6 +88,41 @@ RECOILMAX = 5; //recoil maximum speed
         </arguments>
       </action>
     </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///recover from DEAD
+deadFlag = false;
+visible = true;
+
+if(checkpointRoom == room) {
+    x = checkpointObject.x+checkpointObject.sprite_width/2;
+    y = checkpointObject.y+checkpointObject.sprite_height/2;
+    part_particles_create(particleSystem,x,y,deathParticle,maxBlots);
+    //part_emitter_burst(particleSystem,checkpointEmitter,deathParticle,maxBlots);
+}
+else {
+    
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -107,7 +142,7 @@ RECOILMAX = 5; //recoil maximum speed
             <kind>1</kind>
             <string>///gravity
 gravity_direction = 270; //down
-if(ledgeFlag) { //don't fall while holding an edge
+if(ledgeFlag || deadFlag) { //don't fall while holding an edge or dead
     gravity = 0;
 }
 else if(place_free(x,y+1)) {
@@ -150,6 +185,11 @@ if(input_check_pressed(input.passive_primary)) {
 }
 if(input_check_pressed(input.passive_secondary)) {
     //reorder glyph list
+    if(ds_list_size(glyphList) &gt; 1) {
+        //execute only when there's space to rearrange
+        ds_list_add(glyphList,ds_list_find_value(glyphList,0));
+        ds_list_delete(glyphList,0);
+    }
 }
 //check directional movement
 var moveLeft, moveRight, moveUp, moveDown;
@@ -369,6 +409,43 @@ else image_alpha = 1;
         </arguments>
       </action>
     </event>
+    <event eventtype="4" ename="obj_rip_small">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///activate the rip
+//set this point as the checkpoint
+checkpointRoom = room;
+checkpointObject = other.id;
+
+//restore missing and refilling blots
+currentBlots += missingBlots + refillBlots;
+missingBlots = 0;
+refillBlots = 0;
+
+//set up particle effect
+part_emitter_region(particleSystem,checkpointEmitter,
+    other.x+other.sprite_width/2,other.x+other.sprite_width/2,
+    other.y+other.sprite_height/2,other.y+other.sprite_height/2,
+    ps_shape_rectangle,ps_distr_linear);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="4" ename="obj_wall">
       <action>
         <libid>1</libid>
@@ -405,6 +482,48 @@ if(other.y &lt; y &amp;&amp; !place_free(x,y+vspeed)) {
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///DEAD
+deadFlag = true;
+visible = false;
+
+speed = 0;
+gravity = 0;
+
+/*part_emitter_region(particleSystem,deathEmitter,
+    x,x,y,y,ps_shape_rectangle,ps_distr_linear);
+part_emitter_burst(particleSystem,deathEmitter,deathParticle,10);*/
+part_particles_create(particleSystem,x,y,deathParticle,10);
+
+//recall void and remove all glyphs
+voidRecall();
+while(ds_list_size(glyphList) &gt; 0) {
+    with(ds_list_find_value(glyphList,0)) instance_destroy();
+    ds_list_delete(glyphList,0);
+}
+
+alarm[0] = 120;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -426,6 +545,30 @@ if(other.y &lt; y &amp;&amp; !place_free(x,y+vspeed)) {
 draw_sprite_ext(sprite_index,image_index,
     round(x),round(y),
     image_xscale,image_yscale,image_angle,image_blend,image_alpha);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="82">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///suicide (may be debug only)
+if(!deadFlag) event_user(0);
 </string>
           </argument>
         </arguments>

@@ -224,25 +224,35 @@ if(input_check_released(input.brush_draw) &amp;&amp; canDraw) {
           <argument>
             <kind>1</kind>
             <string>///input: flicking void
+var inputMode, inputCheck;
 if(input_get(input.brush_flickmouse)) {
     //flick to the cursor's position
-    if(input_check(input.brush_flickpress) &amp;&amp; canDraw) {
-        if(currentBlots &gt; 0 &amp;&amp; currentBrush &gt; 0) {
-            if(blotFlickTimer == 0) {
-                currentBlots--;
-                var shot = instance_create(obj_player.x,obj_player.y,obj_voidblot);
-                shot.direction = point_direction(shot.x,shot.y,x,y);
-            }
-            event_user(1); //tick down the Brush meter
-        }
-        blotFlickTimer++;
-        if(blotFlickTimer &gt;= blotFlickValue) blotFlickTimer = 0;
-    }
-    else blotFlickTimer = 0;
+    inputMode = 0;
+    inputCheck = input_check(input.brush_flickpress);
 }
 else {
     //flick based on axis input
+    inputMode = 1;
+    inputCheck = input_check(input.brush_flickh) || input_check(input.brush_flickv)
 }
+
+if(inputCheck &amp;&amp; canDraw) {
+    if(currentBlots &gt; 0 &amp;&amp; currentBrush &gt; 0) {
+        if(blotFlickTimer == 0) {
+            currentBlots--;
+            var shot = instance_create(obj_player.x,obj_player.y,obj_voidblot);
+            if(inputMode == 0)
+                shot.direction = point_direction(shot.x,shot.y,x,y);
+            else 
+                shot.direction = point_direction(0,0,
+                    input_axis(input.brush_flickh),input_axis(input.brush_flickv));
+        }
+        event_user(1); //tick down the Brush meter
+    }
+    blotFlickTimer++;
+    if(blotFlickTimer &gt;= blotFlickValue) blotFlickTimer = 0;
+}
+else blotFlickTimer = 0;
 </string>
           </argument>
         </arguments>

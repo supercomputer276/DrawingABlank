@@ -11,7 +11,7 @@ Define global variables and all enumerators.
  Current state of the VOID IMP.
 */
 globalvar currentHealth, maxHealth,
-    currentBlots, maxBlots, refillBlots,
+    currentBlots, maxBlots, refillBlots, missingBlots,
     currentBrush, maxBrush,
     blotFlickTimer, blotFlickValue,
     blotRefillTimer, blotRefillValue,
@@ -23,6 +23,7 @@ maxHealth = 20; //maximum vitality
 currentBlots = 10; //current blots
 maxBlots = 10; //maximum blots
 refillBlots = 0; //blots to be steadily refilled from destroyed objects
+missingBlots = 0; //blots removed from the map; must be restored at a rip
 currentBrush = 0; //current brush meter value
 maxBrush = 8; //maximum brush meter value
 
@@ -37,6 +38,21 @@ brushRechargeValue = 60; //how many steps to recharge one tick on the brush mete
 
 glyphList = ds_list_create(); //list of docked glyph object instances
 glyphLimit = 1; //how many glyphs can be in the list
+
+/*
+ INVENTORY
+ Variables for tracking what upgrades have been collected.
+*/
+
+/*
+ MAP + CHECKPOINTS
+ Variables relating to status of the map, checkpoints, and the like.
+*/
+globalvar checkpointRoom, checkpointObject;
+checkpointRoom = room_first; //room index that has the active checkpoint
+checkpointObject = noone; //which object acts as the checkpoint's spawn location
+    //this is usually a obj_rip_* but may be others for special cases
+//...
 
 
 /*
@@ -530,8 +546,8 @@ ds_list_add(targetFullList,obj_void_block_arrow_solid, 1);
     Initalizes particle system representing Void and Matter activity.
 */
 globalvar particleSystem,
-    checkpointParticle, deathParticle,
-    checkpointEmitter, deathEmitter;
+    checkpointParticle, deathParticle, glyphParticle,
+    checkpointEmitter;
 
 //particle system
 particleSystem = part_system_create();
@@ -543,7 +559,7 @@ part_type_shape(checkpointParticle,pt_shape_disk);
 part_type_size(checkpointParticle,0.1,0.3,0,0);
 part_type_color1(checkpointParticle,c_black);
 part_type_alpha2(checkpointParticle,0.9,0);
-part_type_life(checkpointParticle,3,8);
+part_type_life(checkpointParticle,6,16);
 part_type_speed(checkpointParticle,2,5,0,0);
 part_type_direction(checkpointParticle,0,360,0,0);
 
@@ -553,10 +569,19 @@ part_type_shape(deathParticle,pt_shape_disk);
 part_type_size(deathParticle,0.2,0.5,0,0);
 part_type_color1(deathParticle,c_black);
 part_type_alpha2(deathParticle,0.8,0.8);
-part_type_life(deathParticle,4,10);
+part_type_life(deathParticle,8,20);
 part_type_speed(deathParticle,2,5,0,0);
 part_type_direction(deathParticle,0,360,0,0);
 
-//there's only one emitter, it just moves
+//glyph particle - a small void particle that rises from drawn glyphs
+glyphParticle = part_type_create();
+part_type_shape(glyphParticle,pt_shape_disk);
+part_type_size(glyphParticle,0.05,0.1,0,0);
+part_type_color1(glyphParticle,c_black);
+part_type_alpha2(glyphParticle,0.8,0);
+part_type_life(glyphParticle,8,20);
+part_type_speed(glyphParticle,2,5,0,0);
+part_type_direction(glyphParticle,90,90,0,10);
+
+//emitters
 checkpointEmitter = part_emitter_create(particleSystem);
-deathEmitter = part_emitter_create(particleSystem);
